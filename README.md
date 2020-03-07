@@ -3,6 +3,7 @@ This repository describes how the [FFmpeg Library](https://www.ffmpeg.org/) is i
 
 ## FFmpeg Source Code
 The source code for the software libraries is taken AS-IS from the following [FFmpeg GitHub Repository](https://github.com/FFmpeg/FFmpeg/tree/n4.2). To access the code, just clone the following GIT repository: https://github.com/FFmpeg/FFmpeg.git and checkout the tag: **4.2n** for getting version 4.2.
+
 **NOTE:** ___TiviApp was built and tested with version 4.2 only. We cannot provide warranty or liability for using other versions of FFmpeg.___
 
 ## Building FFmpeg

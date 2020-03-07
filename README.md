@@ -23,7 +23,7 @@ If you wish to recompile and change the FFmpeg version that is being used in Tiv
 **WARNING:** We will not take any responsibility for any problems that may occur during this process. Perform this at your own risk!
 
 ## Integration and Debug
-For the purpose of debug and integration of custom FFmpeg versions, you may use the following code from the [ExoPlayer GitHub Repository](https://github.com/google/ExoPlayer/tree/r2.11.3/extensions/ffmpeg). TiviApp Live is using the code from the **r2.11.3** tag.
+For the purpose of debug and integration of custom FFmpeg versions, you may use the following code from the [ExoPlayer GitHub Repository](https://github.com/google/ExoPlayer/tree/r2.11.3/extensions/ffmpeg/src/main/java/com/google/android/exoplayer2/ext/ffmpeg). TiviApp Live uses the exact code from the **r2.11.3** tag to load the FFmpeg modules and activate the relevant codecs.
 
 ## License
 The FFmpeg Source Code and Binaries are licensesd under the LGPL v2.1 license

@@ -12,11 +12,20 @@ We build the FFmpeg libraries by using the build_ffmpeg_tiviapp.sh Bash Script i
 * Builds dynamically linked libraries for different ABIs.
 The resulted build artifacts are in form of Shared Object files, that are loaded dynamically (at runtime) by the TiviApp Live application
 
-## Changing FFmpeg Version
+## Changing the FFmpeg Version
 If you wish to recompile and change the FFmpeg version that is being used in TiviApp, you can do so by performing the following steps:
 * Build your custom FFmpeg version for the target device platform (ABI)
-* Place the resulted ```.so``` files in the application's ```lib``` folder on your device (phone storage).
-**NOTE:** You may need root privileges for accessing the folder
-* Reboot the device or Force Stop the TiviApp application.
+* Replace the resulted ```.so``` files in the application's ```lib``` folder on your device (phone storage).
 
+**NOTE:** You may need root privileges for accessing the application folder
+* Reboot the device or Force Stop the TiviApp Live application.
+
+**WARNING:** We will not take any responsibility for any problems that may occur during this process. Perform this at your own risk!
+
+## Integration and Debug
+For the purpose of debug and integration of custom FFmpeg versions, you may use the following code from the [ExoPlayer GitHub Repository](https://github.com/google/ExoPlayer/tree/r2.11.3/extensions/ffmpeg). TiviApp Live is using the code from the **r2.11.3** tag.
+
+## License
+The FFmpeg Source Code and Binaries are licensesd under the LGPL v2.1 license
+All the information in this repository, including build scripts and auxilliary material is licensed under the Apache v2 license 
 

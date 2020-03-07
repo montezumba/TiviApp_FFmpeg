@@ -4,19 +4,24 @@ This repository describes how the [FFmpeg Library](https://www.ffmpeg.org/) is i
 ## FFmpeg Source Code
 The source code for the software libraries is taken AS-IS from the following [FFmpeg GitHub Repository](https://github.com/FFmpeg/FFmpeg/tree/n4.2). To access the code, just clone the following GIT repository: https://github.com/FFmpeg/FFmpeg.git and checkout the tag: **4.2n** for getting version 4.2.
 
-**NOTE:** ___TiviApp was built and tested with version 4.2 only. We cannot provide warranty or liability for using other versions of FFmpeg.___
+**NOTE:** ___TiviApp was built and tested with version 4.2 only. We cannot provide any warranty or liability for using other versions of FFmpeg.___
 
 ## Building FFmpeg
 We build the FFmpeg libraries by using the build_ffmpeg_tiviapp.sh Bash Script in this repository. The script performs the following operations:
 * Fetches the FFmpeg sources (from the Git repository above)
-* Configures the build parameters for TiviApp needs
+* Configures the build parameters for TiviApp's needs
 * Builds dynamically linked libraries for different ABIs.
-The resulted build artifacts are in form of Shared Object files, that are loaded dynamically (at runtime) by the TiviApp Live application
+The resulted build artifacts are in form of Android's Shared Object files, that are loaded dynamically (at runtime) by the TiviApp Live application
 
 ## Changing the FFmpeg Version
-If you wish to recompile and change the FFmpeg version that is being used in TiviApp, you can do so by performing the following steps:
+If you wish to recompile or change the FFmpeg version that is being used in TiviApp, you can do so by performing the following steps:
 * Build your custom FFmpeg version for the target device platform (ABI)
 * Replace the resulted ```.so``` files in the application's ```lib``` folder on your device (phone storage).
+
+For example: on Android 9 the ```.so``` files are located on this path (but it may change from one device to another): 
+```
+/data/data/app/com.treynix.tiviapplive/lib
+```
 
 **NOTE:** ___You may need root privileges for accessing the application folder
 * Reboot the device or Force Stop the TiviApp Live application.___

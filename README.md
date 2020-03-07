@@ -13,6 +13,12 @@ We build the FFmpeg libraries by using the build_ffmpeg_tiviapp.sh Bash Script i
 * Builds dynamically-linked libraries for different ABIs.
 The resulted build artifacts are in form of Android's Shared Object files, that are loaded dynamically (at runtime) by the TiviApp Live application
 
+To run the script on Linux one should:
+* Download and install [NDK](https://developer.android.com/ndk/downloads) for Linux
+* set: ```NDK_PATH=<path to ndk root folder>```
+* run: ```sudo ./build_ffmpeg_tiviapp.sh "${NDK_PATH}"```
+* run: ```sudo ${NDK_PATH}/ndk-build APP_ABI="armeabi-v7a arm64-v8a x86" -j4```
+
 ## Changing the FFmpeg Version
 If you wish to recompile or change the FFmpeg version that is being used in TiviApp, you can do so by performing the following steps:
 * Build your custom FFmpeg version for the target device platform (ABI)
@@ -23,7 +29,7 @@ For example: on Android 9 the ```.so``` files are located on this path (but it m
 /data/data/app/com.treynix.tiviapplive/lib
 ```
 
-**NOTE:** ___You may need root privileges for accessing the application folder___
+**NOTE:** ___You may need root privileges for accessing the application folder on your device___
 * Reboot the device or Force Stop the TiviApp Live application.
 
 **WARNING:** ___We will not take any responsibility for any problems that may occur during this process. Perform this at your own risk!___

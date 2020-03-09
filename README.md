@@ -11,7 +11,9 @@ We build the FFmpeg libraries by using the [build_ffmpeg_tiviapp.sh](jni/build_f
 * Fetches the FFmpeg sources (from the Git repository above)
 * Configures the build parameters for TiviApp's needs
 * Builds dynamically-linked libraries for different ABIs.
-The resulted build artifacts are in form of Android's Shared Object files, that are loaded dynamically (at runtime) by the TiviApp Live application
+
+The resulted build artifacts are in form of Android's Shared Object files, that are loaded dynamically (at runtime) by the TiviApp Live application.
+All build artifacts will be placed in the [lib] folder under their corresponding ABI subfolders.
 
 To build FFmpeg on Linux one should:
 * Download and install [NDK](https://developer.android.com/ndk/downloads) for Linux

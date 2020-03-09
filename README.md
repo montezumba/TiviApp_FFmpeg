@@ -39,6 +39,7 @@ For example: on Android 9 the ```.so``` files are located on this path (but it m
 For the purpose of debug and integration of custom FFmpeg versions, you may use the following code from the [ExoPlayer GitHub Repository](https://github.com/google/ExoPlayer/tree/r2.11.3/extensions/ffmpeg/src/main/java/com/google/android/exoplayer2/ext/ffmpeg). TiviApp Live uses the exact code from the **r2.11.3** tag to load the FFmpeg modules and activate the relevant codecs.
 
 ## License
-The FFmpeg Source Code and Binaries are licensed under the LGPL v2.1 license
+The FFmpeg Source Code and Binaries are licensed under the LGPL v2.1 license.
+
 All the information in this repository, including build scripts and auxiliary material is licensed under the Apache v2 license 
 

@@ -19,7 +19,6 @@ To build FFmpeg on Linux one should:
 * Download and install [NDK](https://developer.android.com/ndk/downloads) for Linux
 * set: ```NDK_PATH=<path to ndk root folder>```
 * run: ```sudo ./build_ffmpeg_tiviapp.sh "${NDK_PATH}"```
-* run: ```sudo ${NDK_PATH}/ndk-build APP_ABI="armeabi-v7a arm64-v8a x86 x86-64" -j4```
 
 ## Changing the FFmpeg Version
 If you wish to recompile or change the FFmpeg version that is being used in TiviApp, you can do so by performing the following steps:

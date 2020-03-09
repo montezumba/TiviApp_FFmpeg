@@ -19,22 +19,22 @@
 # Modifications by: Copyright (C) 2020 Treynix
 #
 # + Added a configuration for x86_64
+# * Changed the configuration for other ABIs
+# + Added building of ffmpeg lib
 # * Hardcoded the enabled-decoders list as per TiviApp specific needs
 # * Changed the FFmpeg source repository to point to the GitHub tag n4.2
 # * Minor changes in the script
 # ------------------------------------------------------------------
 #
 
-#FFMPEG_EXT_PATH=$1
 NDK_PATH=$1
 HOST_PLATFORM="linux-x86_64"
 ENABLED_DECODERS=(vorbis opus flac alac pcm_mulaw pcm_alaw mp3 amrnb amrwb aac ac3 eac3 dca mlp truehd)
-#ENABLED_DECODERS=("${@:4}")
 
 
-COMMON_OPTIONS="    
-    --disable-static
-    --enable-shared
+COMMON_OPTIONS="
+	--target-os=android
+    --disable-static	
     --disable-doc
     --disable-programs
     --disable-everything
@@ -46,9 +46,9 @@ COMMON_OPTIONS="
     --disable-symver
     --enable-avresample
     --enable-swresample
+	--enable-cross-compile
+    --enable-shared
     "
-#TOOLCHAIN_PREFIX="${NDK_PATH}/toolchains/llvm/prebuilt/${HOST_PLATFORM}/bin"
-#TOOLCHAIN_PREFIX_X86_64="${NDK_PATH}/toolchains/x86_64-4.9/prebuilt/linux-x86_64/bin"
 TOOLCHAIN_PATH="${NDK_PATH}/toolchains/llvm/prebuilt/${HOST_PLATFORM}"
 SYSROOT="${TOOLCHAIN_PATH}/sysroot"
 for decoder in "${ENABLED_DECODERS[@]}"
@@ -56,23 +56,58 @@ do
     echo ${decoder}
     COMMON_OPTIONS="${COMMON_OPTIONS} --enable-decoder=${decoder}"
 done
-#cd "${FFMPEG_EXT_PATH}"
-# git://source.ffmpeg.org/ffmpeg
 (git -C ffmpeg pull || git clone https://github.com/FFmpeg/FFmpeg.git ffmpeg)
 cd ffmpeg
 git checkout release/4.2
-echo ${COMMON_OPTIONS}
+################# armeabi-v7a #######################
+./configure \
+	--prefix=android-libs/armeabi-v7a \
+	--arch=arm \
+	--extra-cflags="-O3 -fPIC" \
+	--sysroot=${SYSROOT} \
+	--cross-prefix="${TOOLCHAIN_PATH}/bin/arm-linux-androideabi-" \
+	--cc="${TOOLCHAIN_PATH}/bin/armv7a-linux-androideabi16-clang" \
+	${COMMON_OPTIONS}
+make -j4
+make install-libs
+make clean
+################# arm64-v8a ########################
+./configure \
+	--prefix=android-libs/arm64-v8a \
+	--arch=aarch64 \
+	--extra-cflags="-O3 -fPIC" \
+	--sysroot=${SYSROOT} \
+	--cross-prefix="${TOOLCHAIN_PATH}/bin/aarch64-linux-android-" \
+	--cc="${TOOLCHAIN_PATH}/bin/aarch64-linux-android21-clang" \
+	${COMMON_OPTIONS}
+make -j4
+make install-libs
+make clean
+###################### x86 #########################
+./configure \
+	--prefix=android-libs/x86 \
+	--arch=i686 \
+	--extra-cflags="-O3 -fPIC" \
+	--sysroot=${SYSROOT} \
+	--cross-prefix="${TOOLCHAIN_PATH}/bin/i686-linux-android-" \
+	--cc="${TOOLCHAIN_PATH}/bin/i686-linux-android16-clang" \
+	--disable-asm \
+	${COMMON_OPTIONS}
+make -j4
+make install-libs
+make clean
+###################### x86_64 ######################
 ./configure \
 	--prefix=android-libs/x86_64 \
-	--enable-cross-compile \
 	--arch=x86_64 \
-	--target-os=android \
+	--extra-cflags="-O3 -fPIC" \
 	--sysroot=${SYSROOT} \
 	--cross-prefix="${TOOLCHAIN_PATH}/bin/x86_64-linux-android-" \
 	--cc="${TOOLCHAIN_PATH}/bin/x86_64-linux-android21-clang" \
-	--extra-cflags="-O3 -fPIC" \
 	--x86asmexe="${TOOLCHAIN_PATH}/bin/yasm" \
 	${COMMON_OPTIONS}
 make -j4
 make install-libs
 make clean
+cd ..
+${NDK_PATH}/ndk-build APP_ABI="armeabi-v7a arm64-v8a x86 x86_64" -j4

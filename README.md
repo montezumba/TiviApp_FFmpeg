@@ -7,7 +7,7 @@ The source code for the software libraries is taken as-is from the following [FF
 **NOTE:** ___TiviApp was built and tested with version 4.2 only. We cannot provide any warranty or liability for using other versions of FFmpeg.___
 
 ## Building FFmpeg
-We build the FFmpeg libraries by using the build_ffmpeg_tiviapp.sh Bash Script in this repository. The script performs the following operations:
+We build the FFmpeg libraries by using the [build_ffmpeg_tiviapp.sh](jni/build_ffmpeg_tiviapp.sh) Bash Script in this repository. The script performs the following operations:
 * Fetches the FFmpeg sources (from the Git repository above)
 * Configures the build parameters for TiviApp's needs
 * Builds dynamically-linked libraries for different ABIs.

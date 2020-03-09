@@ -7,17 +7,18 @@ The source code for the software libraries is taken as-is from the following [FF
 **NOTE:** ___TiviApp was built and tested with version 4.2 only. We cannot provide any warranty or liability for using other versions of FFmpeg.___
 
 ## Building FFmpeg
-We build the FFmpeg libraries by using the build_ffmpeg_tiviapp.sh Bash Script in this repository. The script performs the following operations:
+We build the FFmpeg libraries by using the [build_ffmpeg_tiviapp.sh](jni/build_ffmpeg_tiviapp.sh) Bash Script in this repository. The script performs the following operations:
 * Fetches the FFmpeg sources (from the Git repository above)
 * Configures the build parameters for TiviApp's needs
 * Builds dynamically-linked libraries for different ABIs.
-The resulted build artifacts are in form of Android's Shared Object files, that are loaded dynamically (at runtime) by the TiviApp Live application
+
+The resulted build artifacts are in form of Android's Shared Object files, that are loaded dynamically (at runtime) by the TiviApp Live application.
+All build artifacts will be placed in the [lib] folder under their corresponding ABI subfolders.
 
 To build FFmpeg on Linux one should:
 * Download and install [NDK](https://developer.android.com/ndk/downloads) for Linux
 * set: ```NDK_PATH=<path to ndk root folder>```
 * run: ```sudo ./build_ffmpeg_tiviapp.sh "${NDK_PATH}"```
-* run: ```sudo ${NDK_PATH}/ndk-build APP_ABI="armeabi-v7a arm64-v8a x86 x86-64" -j4```
 
 ## Changing the FFmpeg Version
 If you wish to recompile or change the FFmpeg version that is being used in TiviApp, you can do so by performing the following steps:
@@ -38,6 +39,7 @@ For example: on Android 9 the ```.so``` files are located on this path (but it m
 For the purpose of debug and integration of custom FFmpeg versions, you may use the following code from the [ExoPlayer GitHub Repository](https://github.com/google/ExoPlayer/tree/r2.11.3/extensions/ffmpeg/src/main/java/com/google/android/exoplayer2/ext/ffmpeg). TiviApp Live uses the exact code from the **r2.11.3** tag to load the FFmpeg modules and activate the relevant codecs.
 
 ## License
-The FFmpeg Source Code and Binaries are licensesd under the LGPL v2.1 license
-All the information in this repository, including build scripts and auxilliary material is licensed under the Apache v2 license 
+The FFmpeg Source Code and Binaries are licensed under the LGPL v2.1 license.
+
+All the information in this repository, including build scripts and auxiliary material is licensed under the Apache v2 license 
 

@@ -20,6 +20,8 @@ To build FFmpeg on Linux one should:
 * set: ```NDK_PATH=<path to ndk root folder>```
 * run: ```sudo ./build_ffmpeg_tiviapp.sh "${NDK_PATH}"```
 
+Building on Windows 10 is also possible, by installing the [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) feature.
+
 ## Changing the FFmpeg Version
 If you wish to recompile or change the FFmpeg version that is being used in TiviApp, you can do so by performing the following steps:
 * Build your custom FFmpeg version for the target device platform (ABI)

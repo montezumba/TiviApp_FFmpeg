@@ -44,7 +44,7 @@ For example: on Android 9 the ```.so``` files are located on this path (but it m
 **WARNING:** ___We will not take any responsibility for any problems that may occur during this process. Perform this at your own risk!___
 
 ## Integration and Debug
-For the purpose of debug and integration of custom FFmpeg versions, you may use the following code from the [ExoPlayer GitHub Repository](https://github.com/google/ExoPlayer/tree/r2.11.3/extensions/ffmpeg/src/main/java/com/google/android/exoplayer2/ext/ffmpeg). TiviApp Live reuses the code from the **r2.11.3** tag to load the FFmpeg modules and activate the relevant codecs ("avutil", "avresample", "swresample", "avcodec", "ffmpeg").
+For the purpose of debug and integration of custom FFmpeg versions, you may use the following code from the [ExoPlayer GitHub Repository](https://github.com/google/ExoPlayer/tree/r2.11.3/extensions/ffmpeg/src/main/java/com/google/android/exoplayer2/ext/ffmpeg). TiviApp Live reuses the code from the **r2.12** tag to load the FFmpeg modules and activate the relevant codecs ("avutil", "avresample", "swresample", "avcodec", "ffmpeg").
 The only difference from the tag, is the following line in ``FfmpegLibrary.java``:
 ```
  private static final LibraryLoader LOADER =

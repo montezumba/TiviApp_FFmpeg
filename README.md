@@ -16,9 +16,17 @@ The resulted build artifacts are in form of Android's Shared Object files, that 
 All build artifacts will be placed in the [libs](libs) folder under their corresponding ABI subfolders.
 
 To build FFmpeg on Linux one should:
-* Download and install [NDK](https://developer.android.com/ndk/downloads) for Linux
+* Download and install [NDK](https://developer.android.com/ndk/downloads) for **Linux**
+* Make sure that all build tools are installed:
+```
+sudo apt-get update
+sudo apt-get install build-essential
+sudo apt-get install cpp make yasm pkg-config
+```
 * set: ```NDK_PATH=<path to ndk root folder>```
-* run: ```sudo ./build_ffmpeg_tiviapp.sh "${NDK_PATH}"```
+* run: ```sudo ./build_ffmpeg_tiviapp.sh ${NDK_PATH}```
+
+Building on Windows 10 is also possible, by installing the [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) feature.
 
 ## Changing the FFmpeg Version
 If you wish to recompile or change the FFmpeg version that is being used in TiviApp, you can do so by performing the following steps:
@@ -36,7 +44,12 @@ For example: on Android 9 the ```.so``` files are located on this path (but it m
 **WARNING:** ___We will not take any responsibility for any problems that may occur during this process. Perform this at your own risk!___
 
 ## Integration and Debug
-For the purpose of debug and integration of custom FFmpeg versions, you may use the following code from the [ExoPlayer GitHub Repository](https://github.com/google/ExoPlayer/tree/r2.11.3/extensions/ffmpeg/src/main/java/com/google/android/exoplayer2/ext/ffmpeg). TiviApp Live uses the exact code from the **r2.11.3** tag to load the FFmpeg modules and activate the relevant codecs.
+For the purpose of debug and integration of custom FFmpeg versions, you may use the following code from the [ExoPlayer GitHub Repository](https://github.com/google/ExoPlayer/tree/r2.11.3/extensions/ffmpeg/src/main/java/com/google/android/exoplayer2/ext/ffmpeg). TiviApp Live reuses the code from the **r2.12** tag to load the FFmpeg modules and activate the relevant codecs ("avutil", "avresample", "swresample", "avcodec", "ffmpeg").
+The only difference from the tag, is the following line in ``FfmpegLibrary.java``:
+```
+ private static final LibraryLoader LOADER =
+      new LibraryLoader("avutil", "avresample", "swresample", "avcodec", "ffmpeg");
+```
 
 ## License
 The FFmpeg Source Code and Binaries are licensed under the [LGPL v2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html) license.

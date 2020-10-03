@@ -17,6 +17,12 @@ All build artifacts will be placed in the [libs](libs) folder under their corres
 
 To build FFmpeg on Linux one should:
 * Download and install [NDK](https://developer.android.com/ndk/downloads) for Linux
+* Make sure that all build tools are installed:
+```
+sudo apt-get update
+sudo apt-get install build-essential
+sudo apt-get install cpp make yasm pkg-config
+```
 * set: ```NDK_PATH=<path to ndk root folder>```
 * run: ```sudo ./build_ffmpeg_tiviapp.sh "${NDK_PATH}"```
 

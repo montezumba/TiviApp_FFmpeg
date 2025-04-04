@@ -22,19 +22,25 @@
 # * Changed the configuration for other ABIs
 # + Added building of ffmpeg lib
 # * Hardcoded the enabled-decoders list as per TiviApp specific needs
-# * Changed the FFmpeg source repository to point to the GitHub tag n4.2
+# * Changed the FFmpeg source repository to point to the GitHub tag n6.0
 # * Minor changes in the script
 # ------------------------------------------------------------------
 #
-
+set -eu
 NDK_PATH=$1
+echo "NDK path is ${NDK_PATH}"
 HOST_PLATFORM="linux-x86_64"
+echo "Host platform is ${HOST_PLATFORM}"
+ANDROID_ABI=21
+echo "ANDROID_ABI is ${ANDROID_ABI}"
 ENABLED_DECODERS=(vorbis opus flac alac pcm_mulaw pcm_alaw mp3 amrnb amrwb aac ac3 eac3 dca mlp truehd)
-
-
+echo "Enabled decoders are ${ENABLED_DECODERS[@]}"
+JOBS="$(nproc 2> /dev/null || sysctl -n hw.ncpu 2> /dev/null || echo 4)"
+echo "Using $JOBS jobs for make"
 COMMON_OPTIONS="
-	--target-os=android
-    --disable-static	
+    --target-os=android
+    --enable-static
+    --disable-shared
     --disable-doc
     --disable-programs
     --disable-everything
@@ -44,70 +50,98 @@ COMMON_OPTIONS="
     --disable-postproc
     --disable-avfilter
     --disable-symver
-    --enable-avresample
     --enable-swresample
-	--enable-cross-compile
-    --enable-shared
+    --extra-ldexeflags=-pie
+    --disable-v4l2-m2m
+    --disable-vulkan
     "
-TOOLCHAIN_PATH="${NDK_PATH}/toolchains/llvm/prebuilt/${HOST_PLATFORM}"
-SYSROOT="${TOOLCHAIN_PATH}/sysroot"
+TOOLCHAIN_PREFIX="${NDK_PATH}/toolchains/llvm/prebuilt/${HOST_PLATFORM}/bin"
+if [[ ! -d "${TOOLCHAIN_PREFIX}" ]]
+then
+    echo "Please set correct NDK_PATH, $NDK_PATH is incorrect"
+    exit 1
+fi
+
 for decoder in "${ENABLED_DECODERS[@]}"
 do
-    echo ${decoder}
     COMMON_OPTIONS="${COMMON_OPTIONS} --enable-decoder=${decoder}"
 done
+
+ARMV7_CLANG="${TOOLCHAIN_PREFIX}/armv7a-linux-androideabi${ANDROID_ABI}-clang"
+if [[ ! -e "$ARMV7_CLANG" ]]
+then
+    echo "AVMv7 Clang compiler with path $ARMV7_CLANG does not exist"
+    echo "It's likely your NDK version doesn't support ANDROID_ABI $ANDROID_ABI"
+    echo "Either use older version of NDK or raise ANDROID_ABI (be aware that ANDROID_ABI must not be greater than your application's minSdk)"
+    exit 1
+fi
+ANDROID_ABI_64BIT="$ANDROID_ABI"
+if [[ "$ANDROID_ABI_64BIT" -lt 21 ]]
+then
+    echo "Using ANDROID_ABI 21 for 64-bit architectures"
+    ANDROID_ABI_64BIT=21
+fi
+
 (git -C ffmpeg pull || git clone https://github.com/FFmpeg/FFmpeg.git ffmpeg)
 cd ffmpeg
-git checkout release/4.2
+git checkout release/6.0
 ################# armeabi-v7a #######################
 ./configure \
-	--prefix=android-libs/armeabi-v7a \
-	--arch=arm \
-	--extra-cflags="-O3 -fPIC" \
-	--sysroot=${SYSROOT} \
-	--cross-prefix="${TOOLCHAIN_PATH}/bin/arm-linux-androideabi-" \
-	--cc="${TOOLCHAIN_PATH}/bin/armv7a-linux-androideabi16-clang" \
-	${COMMON_OPTIONS}
-make -j4
+    --libdir=android-libs/armeabi-v7a \
+    --arch=arm \
+    --cpu=armv7-a \
+    --cross-prefix="${TOOLCHAIN_PREFIX}/armv7a-linux-androideabi${ANDROID_ABI}-" \
+    --nm="${TOOLCHAIN_PREFIX}/llvm-nm" \
+    --ar="${TOOLCHAIN_PREFIX}/llvm-ar" \
+    --ranlib="${TOOLCHAIN_PREFIX}/llvm-ranlib" \
+    --strip="${TOOLCHAIN_PREFIX}/llvm-strip" \
+    --extra-cflags="-march=armv7-a -mfloat-abi=softfp" \
+    --extra-ldflags="-Wl,--fix-cortex-a8" \
+    ${COMMON_OPTIONS}
+make -j$JOBS
 make install-libs
 make clean
 ################# arm64-v8a ########################
 ./configure \
-	--prefix=android-libs/arm64-v8a \
-	--arch=aarch64 \
-	--extra-cflags="-O3 -fPIC" \
-	--sysroot=${SYSROOT} \
-	--cross-prefix="${TOOLCHAIN_PATH}/bin/aarch64-linux-android-" \
-	--cc="${TOOLCHAIN_PATH}/bin/aarch64-linux-android21-clang" \
-	${COMMON_OPTIONS}
-make -j4
+    --libdir=android-libs/arm64-v8a \
+    --arch=aarch64 \
+    --cpu=armv8-a \
+    --cross-prefix="${TOOLCHAIN_PREFIX}/aarch64-linux-android${ANDROID_ABI_64BIT}-" \
+    --nm="${TOOLCHAIN_PREFIX}/llvm-nm" \
+    --ar="${TOOLCHAIN_PREFIX}/llvm-ar" \
+    --ranlib="${TOOLCHAIN_PREFIX}/llvm-ranlib" \
+    --strip="${TOOLCHAIN_PREFIX}/llvm-strip" \
+    ${COMMON_OPTIONS}
+make -j$JOBS
 make install-libs
 make clean
 ###################### x86 #########################
 ./configure \
-	--prefix=android-libs/x86 \
-	--arch=i686 \
-	--extra-cflags="-O3 -fPIC" \
-	--sysroot=${SYSROOT} \
-	--cross-prefix="${TOOLCHAIN_PATH}/bin/i686-linux-android-" \
-	--cc="${TOOLCHAIN_PATH}/bin/i686-linux-android16-clang" \
-	--disable-asm \
-	${COMMON_OPTIONS}
-make -j4
+    --libdir=android-libs/x86 \
+    --arch=x86 \
+    --cpu=i686 \
+    --cross-prefix="${TOOLCHAIN_PREFIX}/i686-linux-android${ANDROID_ABI}-" \
+    --nm="${TOOLCHAIN_PREFIX}/llvm-nm" \
+    --ar="${TOOLCHAIN_PREFIX}/llvm-ar" \
+    --ranlib="${TOOLCHAIN_PREFIX}/llvm-ranlib" \
+    --strip="${TOOLCHAIN_PREFIX}/llvm-strip" \
+    --disable-asm \
+    ${COMMON_OPTIONS}
+make -j$JOBS
 make install-libs
 make clean
 ###################### x86_64 ######################
 ./configure \
-	--prefix=android-libs/x86_64 \
-	--arch=x86_64 \
-	--extra-cflags="-O3 -fPIC" \
-	--sysroot=${SYSROOT} \
-	--cross-prefix="${TOOLCHAIN_PATH}/bin/x86_64-linux-android-" \
-	--cc="${TOOLCHAIN_PATH}/bin/x86_64-linux-android21-clang" \
-	--x86asmexe="${TOOLCHAIN_PATH}/bin/yasm" \
-	${COMMON_OPTIONS}
-make -j4
+    --libdir=android-libs/x86_64 \
+    --arch=x86_64 \
+    --cpu=x86-64 \
+    --cross-prefix="${TOOLCHAIN_PREFIX}/x86_64-linux-android${ANDROID_ABI_64BIT}-" \
+    --nm="${TOOLCHAIN_PREFIX}/llvm-nm" \
+    --ar="${TOOLCHAIN_PREFIX}/llvm-ar" \
+    --ranlib="${TOOLCHAIN_PREFIX}/llvm-ranlib" \
+    --strip="${TOOLCHAIN_PREFIX}/llvm-strip" \
+    --disable-asm \
+    ${COMMON_OPTIONS}
+make -j$JOBS
 make install-libs
 make clean
-cd ..
-${NDK_PATH}/ndk-build APP_ABI="armeabi-v7a arm64-v8a x86 x86_64" -j4
